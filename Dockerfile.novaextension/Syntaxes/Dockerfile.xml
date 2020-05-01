@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<syntax name="docker">
+	<meta>
+		<name>Dockerfile</name>
+		<type>structured</type>
+		<preferred-file-extension></preferred-file-extension>
+	</meta>
+	
+	<detectors>
+		<filename priority="1.0">Dockerfile</filename>
+	</detectors>
+	
+	<indentation>
+		<increase>
+			<expression>^\s*&lt;(([^!/?]|%)(?!.+?([/%]&gt;|&lt;/.+?&gt;))|[%!]--\s*$)</expression>
+		</increase>
+		<decrease>
+			<expression>^\s*(&lt;/[^&gt;]+&gt;|--&gt;|--%&gt;)</expression>
+		</decrease>
+	</indentation>
+	
+	<comments>
+		<single>
+			<expression>#</expression>
+		</single>
+	</comments>
+    
+    <surrounding-pairs>
+        <pair open="&lt;" close="&gt;" />
+        <pair open="{" close="}" />
+        <pair open="[" close="]" />
+        <pair open="(" close=")" />
+        <pair open="&apos;" close="&apos;" />
+        <pair open="&quot;" close="&quot;" />
+        <pair open="`" close="`" />
+    </surrounding-pairs>
+	
+	<scopes>
+		<!-- Meta -->
+		<scope name="docker.meta.processing">
+			<starts-with>
+				<expression>&lt;\?docker</expression>
+			</starts-with>
+			<ends-with>
+				<expression>\?&gt;</expression>
+			</ends-with>
+		</scope>
+		<scope name="docker.meta.declaration">
+			<starts-with>
+				<expression>&lt;!(?i:DOCTYPE)</expression>
+			</starts-with>
+			<ends-with>
+				<expression>&gt;</expression>
+			</ends-with>
+		</scope>
+		<scope name="docker.meta.cdata">
+			<starts-with>
+				<expression>&lt;!\[(?i:CDATA)\[</expression>
+			</starts-with>
+			<ends-with>
+				<expression>\]\]&gt;</expression>
+			</ends-with>
+			<subscopes />
+		</scope>
+		
+		<!-- Comments -->
+		<!-- Comments -->
+		<scope name="env.comment.single" spell-check="true">
+			<expression>\#.*$</expression>
+		</scope>
+		
+		<!-- Tags -->
+		<include syntax="self" collection="tags" />
+		
+		<!-- Values -->
+		<scope name="html.value.entity.numeric">
+			<expression>&amp;\#[0-9]+;</expression>
+		</scope>
+		<scope name="docker.value.entity.named">
+		    <strings prefix="&amp;" suffix=";" word-boundary="false">
+		        <string>amp</string>
+		        <string>lt</string>
+		        <string>gt</string>
+		        <string>apos</string>
+		        <string>quot</string>
+	        </strings>
+		</scope>
+	</scopes>
+	
+	<collections>
+		<!-- Tags -->
+		<collection name="tags">
+			<scope name="docker.tag.close">
+				<symbol type="tag">
+				    <context behavior="end" group-by-name="true" />
+			    </symbol>
+				<expression>&lt;/([a-zA-Z_][a-zA-Z0-9_-]*)&gt;</expression>
+				<capture number="1" name="docker.tag.name" />
+			</scope>
+			<scope name="docker.tag.open">
+				<symbol type="tag">
+				    <!-- Do not match self-closing tags for symbolication -->
+				    <filter match-end="(?&lt;!/&gt;)" />
+				    <context behavior="start" group-by-name="true" />
+				    <auto-close string="&lt;/" completion="${name}&gt;" />
+			    </symbol>
+				<starts-with>
+					<expression>&lt;([a-zA-Z_][a-zA-Z0-9_-]*)</expression>
+					<capture number="1" name="docker.tag.name" />
+				</starts-with>
+				<ends-with>
+					<expression>/?&gt;</expression>
+				</ends-with>
+				<subscopes>
+					<include syntax="self" collection="docker.tag.attributes" />
+				</subscopes>
+			</scope>
+		</collection>
+		
+		<!-- Tag Attributes -->
+		<collection name="docker.tag.attributes">
+			<scope name="docker.tag.attribute">
+				<expression>(?:([a-zA-Z_][a-zA-Z0-9-_]*)(\:))?([a-zA-Z_][a-zA-Z0-9-_]*)\s*(=?)\s*(?:(?:(&apos;)(\\&apos;|[^&apos;]*)(&apos;)?)|(?:(&quot;)(\\&quot;|[^&quot;]*)(&quot;)?))?</expression>
+				<capture number="1" name="docker.tag.attribute.name.namespace" />
+				<capture number="2" name="docker.tag.attribute.name.separator" />
+				<capture number="3" name="docker.tag.attribute.name.local" />
+				<capture number="4" name="docker.tag.attribute.equals-sign" />
+				<capture number="5" name="docker.tag.attribute.quote.left" />
+				<capture number="6" name="docker.tag.attribute.value" />
+				<capture number="7" name="docker.tag.attribute.quote.right" />
+				<capture number="8" name="docker.tag.attribute.quote.left" />
+				<capture number="9" name="docker.tag.attribute.value" />
+				<capture number="10" name="docker.tag.attribute.quote.right" />
+			</scope>
+		</collection>
+	</collections>
+</syntax>

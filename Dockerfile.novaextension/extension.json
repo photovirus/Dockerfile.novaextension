@@ -1,0 +1,8 @@
+{
+    "identifier": "yakovshapovalov.Dockerfile",
+    "name": "Dockerfile",
+    "vendor": "Yakov Shapovalov",
+    "description": "Syntax highlighting for Dockerfile in Nova",
+    "version": "1.0",
+    "categories": ["languages"]
+}
