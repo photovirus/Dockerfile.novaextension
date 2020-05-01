@@ -28,34 +28,8 @@
     </surrounding-pairs>
 	
 	<scopes>
-		<!-- Comments -->
 		<include syntax="self" collection="comments" />
-		
 		<include syntax="self" collection="directives" />
-		
-		<!-- Keywords
-		<scope name="docker.keyword">
-			<strings>
-				<string>ADD</string>
-				<string>ARG</string>
-				<string>CMD</string>
-				<string>COPY</string>
-				<string>ENTRYPOINT</string>
-				<string>ENV</string>
-				<string>EXPOSE</string>
-				<string>FROM</string>
-				<string>HEALTHCHECK</string>
-				<string>LABEL</string>
-				<string>MAINTAINER</string>
-				<string>RUN</string>
-				<string>SHELL</string>
-				<string>STOPSIGNAL</string>
-				<string>USER</string>
-				<string>VOLUME</string>
-				<string>WORKDIR</string>
-			</strings>
-		</scope> -->
-		
 		<include syntax="self" collection="values" />
 	</scopes>
 			
@@ -84,15 +58,21 @@
 			             )?         # make decimal portion optional
 			           )</expression>
 			</scope>
+			<scope name="docker.values.invalid">
+				<expression>^[^A-Z\n](.*)$</expression>
+				<capture number="0" name="docker.body" />
+			</scope>
 		</collection>
 	
 		<!-- Strings -->
 		<collection name="strings">
 			<scope name="docker.string.double-quoted">
 				<expression>&quot;(?:[^&quot;\\]|\\.)*(?:&quot;|$)</expression>
+				<capture number="0" name="docker.string.quoted.double" />
 			</scope>
 			<scope name="docker.string.single-quoted">
 				<expression>&apos;(?:[^&apos;\\]|\\.)*(?:&apos;|$)</expression>
+				<capture number="0" name="docker.string.quoted.single" />
 			</scope>
 		</collection>
 		
@@ -109,29 +89,48 @@
 		
 			<!-- FROM -->
 			<scope name="docker.directive.from">
-				<expression>(?i:(from))\s+[^\s:@]+(?:[:@](\S+))?(?:\s+(?i:(as))\s+(\S+))?</expression>
+				<expression>^\s*(?i:(from))\s+[^\s:@]+(?:[:@](\S+))?(?:\s+(?i:(as))\s+(\S+))?</expression>
 				<capture number="1" name="docker.keyword" />
 				<capture number="2" name="docker.entity.name.tag" />
 				<capture number="3" name="docker.keyword" />
 				<capture number="4" name="docker.variable.stage-name" />
+				<subscopes>
+					<include syntax="self" collection="comments" />
+				</subscopes>					
 			</scope>
 		
 			<!-- ONBUILD -->			
 			<scope name="docker.directive.onbuild">
-				<expression>^(?i:(onbuild)\s+)?((?i:add|arg|env|expose|healthcheck|label|run|shell|stopsignal|user|volume|workdir))(\s+.*)?$</expression>
-				<capture number="1" name="docker.keyword" />
-				<capture number="2" name="docker.keyword" />
+				<starts-with>
+					<expression>^\s*(?i:(onbuild)\s+)?(?i:(add|arg|cmd|copy|entrypoint|env|expose|healthcheck|label|run|shell|stopsignal|user|volume|workdir))\s+</expression>
+					<capture number="1" name="docker.keyword.control" />
+					<capture number="2" name="docker.keyword.other.special-method" />
+				</starts-with>
+				<ends-with>
+					<expression>$</expression>
+				</ends-with>
+					<subscopes>
+						<include syntax="self" collection="values" />
+						<include syntax="self" collection="comments" />
+						<scope name="docker.directive.copy">
+							<expression>(?i:copy)(?:\s+--from=(\S+))?</expression>
+							<capture number="1" name="docker.variable.stage-name" />
+							<subscopes>
+								<include syntax="self" collection="values" />
+								<include syntax="self" collection="comments" />
+							</subscopes>
+						</scope>
+					</subscopes>
 			</scope>
 			
-			<!-- <scope name="docker.directive.non_onbuild">
-
-			</scope> -->
-		</collection>
-		
-		<collection name="identifiers">
-			<scope name="docker.identifier">
-				<expression>\b[a-zA-Z_][A-Za-z0-9_]*\b</expression>
+			<!-- Non ONBUILD -->
+			<scope name="docker.directive.non_onbuild">
+				<expression>^\s*(?i:(maintainer))</expression>
+				<capture number="1" name="docker.keyword.control" />
 			</scope>
+			<subscopes>
+				<include syntax="self" collection="values" />
+			</subscopes>
 		</collection>
 	</collections>
 </syntax>
