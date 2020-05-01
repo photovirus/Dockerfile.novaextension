@@ -2,8 +2,12 @@
     "identifier": "yakovshapovalov.Dockerfile",
     "name": "Dockerfile",
     "vendor": "Yakov Shapovalov",
-    "description": "Syntax highlighting for Dockerfile in Nova",
+    "description": "Syntax highlighting for Dockerfiles in Nova",
     "version": "0.1",
     "categories": ["languages"],
-    "repository": 
+    "repository": "https://github.com/photovirus/Dockerfile.novaextension",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/photovirus/Dockerfile.novaextension/issues"
+    }
 }
