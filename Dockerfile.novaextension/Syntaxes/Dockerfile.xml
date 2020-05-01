@@ -8,6 +8,8 @@
 	
 	<detectors>
 		<filename priority="1.0">Dockerfile</filename>
+		<filename priority="1.0">dockerfile</filename>
+		<match-content lines="1" priority="1.0">^\s*(?i:(from(?!\s+\S+\s+import)|arg))\s+</match-content>
 	</detectors>
 	
 	<comments>
@@ -27,23 +29,108 @@
 	
 	<scopes>
 		<!-- Comments -->
-		<scope name="env.comment.single" spell-check="true">
-			<expression>\#.*$</expression>
-		</scope>
+		<include syntax="self" collection="comments" />
 		
-		<!-- Values -->
-		<scope name="docker.value.entity.named">
-		</scope>
+		<include syntax="self" collection="directives" />
+		
+		<!-- Keywords
+		<scope name="docker.keyword">
+			<strings>
+				<string>ADD</string>
+				<string>ARG</string>
+				<string>CMD</string>
+				<string>COPY</string>
+				<string>ENTRYPOINT</string>
+				<string>ENV</string>
+				<string>EXPOSE</string>
+				<string>FROM</string>
+				<string>HEALTHCHECK</string>
+				<string>LABEL</string>
+				<string>MAINTAINER</string>
+				<string>RUN</string>
+				<string>SHELL</string>
+				<string>STOPSIGNAL</string>
+				<string>USER</string>
+				<string>VOLUME</string>
+				<string>WORKDIR</string>
+			</strings>
+		</scope> -->
+		
+		<include syntax="self" collection="values" />
 	</scopes>
 			
 	<collections>
+		<collection name="values">
+			<include syntax="self" collection="strings" />
+			<scope name="docker.value.number">
+				<expression>(?x:         # turn on extended mode
+			             -?         # an optional minus
+			             (?:
+			               0        # a zero
+			               |        # ...or...
+			               [1-9]    # a 1-9 character
+			               \d*      # followed by zero or more digits
+			             )
+			             (?:
+			               (?:
+			                 \.     # a period
+			                 \d+    # followed by one or more digits
+			               )?
+			               (?:
+			                 [eE]   # an e character
+			                 [+-]?  # followed by an option +/-
+			                 \d+    # followed by one or more digits
+			               )?       # make exponent optional
+			             )?         # make decimal portion optional
+			           )</expression>
+			</scope>
+		</collection>
+	
 		<!-- Strings -->
 		<collection name="strings">
-			<scope name="makefile.string.double-quoted">
+			<scope name="docker.string.double-quoted">
 				<expression>&quot;(?:[^&quot;\\]|\\.)*(?:&quot;|$)</expression>
 			</scope>
-			<scope name="makefile.string.single-quoted">
+			<scope name="docker.string.single-quoted">
 				<expression>&apos;(?:[^&apos;\\]|\\.)*(?:&apos;|$)</expression>
+			</scope>
+		</collection>
+		
+		<!-- Comments -->
+		<collection name="comments">
+			<scope name="docker.comment.single" spell-check="true">
+				<expression>\#(.*)$</expression>
+				<capture number="1" name="docker.comment.content" />
+			</scope>
+		</collection>
+		
+		<!-- Directives -->
+		<collection name="directives">
+		
+			<!-- FROM -->
+			<scope name="docker.directive.from">
+				<expression>(?i:(from))\s+[^\s:@]+(?:[:@](\S+))?(?:\s+(?i:(as))\s+(\S+))?</expression>
+				<capture number="1" name="docker.keyword" />
+				<capture number="2" name="docker.entity.name.tag" />
+				<capture number="3" name="docker.keyword" />
+				<capture number="4" name="docker.variable.stage-name" />
+			</scope>
+		
+			<!-- ONBUILD -->			
+			<scope name="docker.directive.onbuild">
+				<expression>^(?i:(onbuild)\s+)?((?i:add|arg|env|expose|healthcheck|label|run|shell|stopsignal|user|volume|workdir))(\s+.*)?$</expression>
+				<capture number="1" name="docker.keyword" />
+				<capture number="2" name="docker.keyword" />
+			</scope>
+			
+			<!-- <scope name="docker.directive.non_onbuild">
+
+			</scope> -->
+		</collection>
+		
+		<collection name="identifiers">
+			<scope name="docker.identifier">
+				<expression>\b[a-zA-Z_][A-Za-z0-9_]*\b</expression>
 			</scope>
 		</collection>
 	</collections>
