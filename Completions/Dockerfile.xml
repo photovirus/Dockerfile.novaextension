@@ -2,15 +2,38 @@
 <completions>
     <provider name="identifier">
         <syntax>Dockerfile</syntax>
-        <selector>docker</selector>
-        <expression>\b[a-zA-Z0-9-_]*</expression>
+        <selector>*:not(string,comment)</selector>
+        <expression>(?&lt;!\.)\b[a-zA-Z0-9-_]*</expression>
+        
         <set>docker.keywords</set>
+        <set>docker.entities</set>
     </provider>
     
-    <!-- Entities -->
+    <!-- Quotes -->
     <set name="docker.entities">
 		<completion string="&quot;" />
 		<completion string="&amp;" />
 		<completion string="&apos;" />
+    </set>
+    
+    <!-- Keywords -->
+    <set name="docker.keywords">
+        <completion string="ADD" />
+        <completion string="ARG" />
+        <completion string="CMD" />
+        <completion string="COPY" />
+        <completion string="ENTRYPOINT" />
+        <completion string="ENV" />
+        <completion string="EXPOSE" />
+        <completion string="FROM" />
+        <completion string="HEALTHCHECK" />
+        <completion string="LABEL" />
+        <completion string="MAINTAINER" />
+        <completion string="RUN" />
+        <completion string="SHELL" />
+        <completion string="STOPSIGNAL" />
+        <completion string="USER" />
+        <completion string="VOLUME" />
+        <completion string="WORKDIR" />
     </set>
 </completions>
