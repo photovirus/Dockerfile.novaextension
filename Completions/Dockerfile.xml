@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <completions>
     <provider name="identifier">
-        <syntax>Dockerfile</syntax>
+        <syntax>docker</syntax>
         <selector>*:not(string,comment)</selector>
         <expression>(?&lt;!\.)\b[a-zA-Z0-9-_]*</expression>
         
