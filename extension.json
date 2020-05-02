@@ -3,7 +3,7 @@
     "name": "Dockerfile",
     "vendor": "Yakov Shapovalov",
     "description": "Syntax highlighting for Dockerfiles in Nova",
-    "version": "0.1",
+    "version": "1.0",
     "categories": ["languages"],
     "repository": "https://github.com/photovirus/Dockerfile.novaextension",
     "license": "MIT",
