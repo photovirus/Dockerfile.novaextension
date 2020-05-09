@@ -9,7 +9,6 @@
 	<detectors>
 		<filename priority="1.0">Dockerfile</filename>
 		<filename priority="1.0">dockerfile</filename>
-		<match-content lines="1" priority="1.0">^\s*(?i:(from))\s+[^\s:@]+(?:[:@](\S+))?(?:\s+(?i:(as))\s+(\S+))?</match-content>
 	</detectors>
 	
 	<comments>
