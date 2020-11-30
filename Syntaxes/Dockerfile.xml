@@ -9,6 +9,8 @@
 	<detectors>
 		<filename priority="1.0">Dockerfile</filename>
 		<filename priority="1.0">dockerfile</filename>
+		<filename priority="1.0">Containerfile</filename>
+		<filename priority="1.0">containerfile</filename>
 	</detectors>
 	
 	<comments>
