@@ -11,6 +11,7 @@
 		<filename priority="1.0">dockerfile</filename>
 		<filename priority="1.0">Containerfile</filename>
 		<filename priority="1.0">containerfile</filename>
+		<extension priority="1.0">Dockerfile,dockerfile,Containerfile,containerfile</extension>
 	</detectors>
 	
 	<comments>
